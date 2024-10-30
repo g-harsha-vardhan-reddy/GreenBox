@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenBox</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .header {
+            background-color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 80px;
+        }
+
+        .header img{
+            width: 80px;
+            height: 80px;
+            border-radius: 5px;
+            object-fit: cover; 
+        }
+        .sidebar {
+            display: flex;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 200px;
+            background-color: #34a853;
+            color: rgb(163, 58, 58);
+            padding: 20px;
+            z-index: 1000;
+            flex-direction: column;
+            gap: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: transform 0.3s;
+            transform: translateX(-100%);
+        }
+
+        .sidebar.show {
+            display: flex;
+            transform: translateX(0);
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #2d7b42;
+        }
+
+        .title {
+            background-color: #34a853;
+            color: white;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: xx-large;
+            border-radius: 5px;
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 24px;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 4px 8px;
+            font-size: 14px;
+        }
+
+        .main {
+            background-color: #4285f4;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 20px;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        .item {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            width: 230px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-content: center;
+        }
+
+        .item img {
+            width: 200px;
+            height: 200px;
+            border-radius: 5px;
+            object-fit: cover; 
+        }
+
+        .item-name, .item-cost {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .item-cost {
+            color: #34a853;
+        }
+
+        .contact {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .contact .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .contact form {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .contact input[type="email"] {
+            padding: 10px;
+            width: 200px;
+            border-radius: 3px;
+            border: none;
+        }
+
+        .contact button {
+            padding: 10px;
+            background-color: #f4b400;
+            border: none;
+            border-radius: 3px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .contact {
+            display: none;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="hamburger" onclick="toggleSidebar()">
+                <img src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcR98g3GZwzJE0Hlonie_5welkCsnrEwNmWpmHl1z5hO2ponWH8e">
+            </div>
+
+            <div class="sidebar" id="sidebar">
+                <a href="#" onclick="showMain()">Home</a>
+                <a href="#" onclick="showContact()">Contact</a>
+                <a href="#" onclick="toggleSidebar()">Close</a>
+            </div>
+            
+            <div class="title">GreenBox Grocery</div>
+            <div class="cart-icon">
+                🛒
+                <span id="cart-count" class="cart-count">0</span>
+            </div>
+        </div>
+        <div class="main" id="main-section">
+            <!-- Items Data update here -->
+        </div>
+        <div class="contact" id="contact">
+            <div class="footer-content">
+                <p><strong>Contact Us</strong></p>
+                <p>Address: GreenBox Grocery, Mydukur Road, Proddatur</p>
+                <p>Email: contact@greenbox.com</p>
+                <form id="subscribe-form">
+                    <label for="email">Get Updates & Offers:</label>
+                    <input type="email" id="email" name="email" placeholder="Your email" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cartCount = 0;
+
+        // Images and item data
+        const items = {
+            "Cabage": "$10",
+            "CauliFlower": "$5",
+            "Radish": "$7", 
+            "Mushroom": "$8",
+            "Onion": "$11",
+            "Chilli": "$23",
+            "Brocli": "$4",
+            "Potato": "$33",
+            "Brinjal": "$21",
+            "Tomato": "$12"
+
+        };
+        const images = ["https://lh3.googleusercontent.com/PjZVDoBISiu2gPgW1eLjd6CPxVrb1PYoirsbQ3uTe0fDN_P9K12UutYVzoSRNQTvvz9ILhBQxE-qBZ8WRUAqItRCDDamhFpoMl_KIcltF4zhEmBkKZfz29BQPBjKkjTG4g=w1280", 
+                        "https://lh4.googleusercontent.com/SAx4RP3JbseOSiz1Mj1YeCI9mmX278zKwNLmMppvFVV8osKIKNMzcEUrc9HJm3ATO35IjDPqKHPwa7chhBB90FEoylRi4WBJcqHy5gMN5mTtpO1CM6YAkhf_QA3Xhdnq5Q=w1280", 
+                        "https://lh6.googleusercontent.com/D6UcoYMnQ1jdFUEAS9dgK4w3qSv_F30bWOvX9LlRK1kjkbKXw5it1KSfr-1pvc5dFUx9sz_ywDDnVdwDkvptgF6xaCAAMgULMnePQflKIzyhj79XUcOLQcshLvzBQzrNNQ=w1280", 
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAl6dMFyzcTpVV5sXKfDqtgA8ytZmgmwZ9yQ&s", 
+                        "https://lh3.googleusercontent.com/1Etdox3sGzK-eUMWq1e_MoPOJun48RYk_G6_BNyZoi5rmvk3WoylMHvA0gpIh0AbbhfPbW9C1dcz0TOO-tLTo2XtI0-JYFrtzn7E2eGuBdXPRm8eTuqD8HRBbUC9w4mFuA=w1280", 
+                        "https://lh4.googleusercontent.com/7gbV6d5MLW9qgRDDxEcsbPiJg1og__bD41r5pLrksNfxndUqybeOYqxsaqTOTfeNnnm_BHua7Hvo_SSbEEYKZuoiAd56PKEFbV2-Puiezaaij6dG2N9RQcU6H8I_tXkEwg=w1280", 
+                        "https://lh6.googleusercontent.com/fBaVmsIKjKi4zJ_mFTR5WuATTrAvi6_5HsbGe1Tpot21tE7rKOHEYOsMolwaDaJLkavaM_NiSlWy29EZ-Eeny_7sqmRyVHcy-BWq1GMuR6_nl-svP-aHg2GN4BFeg6qtdg=w1280",
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQs_qEXfN1YPXJ88mSFmAq-vMQ9_FfKpjq-XdLWdZ2ujcKKLvCT-GBP&usqp=CAE&s",
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5tSSevysfTNNnFnJRRIUui6ha1u2h66RCcwvIQTEP4hA9TqQpEubG&usqp=CAE&s",
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbNi9XWlH3QXiwCCuLt3wjOZ_DFOE9PvrXJP768WPjp_o3BYUyh2qA&usqp=CAE&s"
+                    ];
+
+        // Function to add item to cart
+        function addToCart() {
+            cartCount++;
+            document.getElementById('cart-count').innerText = cartCount;
+        }
+
+        // Function to load items
+        function loadItems() {
+            const mainSection = document.getElementById('main-section');
+            let index = 0;
+
+            for (const [name, price] of Object.entries(items)) {
+                if (index >= images.length) break;
+
+                // Create item container
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                itemDiv.onclick = addToCart;
+
+                // Add image
+                const img = document.createElement('img');
+                img.src = `${images[index]}`; // Use images from the folder
+                img.alt = name;
+                itemDiv.appendChild(img);
+
+                // Add name
+                const itemName = document.createElement('div');
+                itemName.className = 'item-name';
+                itemName.innerText = name;
+                itemDiv.appendChild(itemName);
+
+                // Add price
+                const itemCost = document.createElement('div');
+                itemCost.className = 'item-cost';
+                itemCost.innerText = price;
+                itemDiv.appendChild(itemCost);
+
+                // Append item to main section
+                mainSection.appendChild(itemDiv);
+                index++;
+            }
+        }
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("show");
+        }
+
+        function showMain() {
+            document.getElementById('contact').style.display="none";
+            document.getElementById('main-section').style.display='flex';
+            document.getElementById("sidebar").classList.remove("show");
+        }
+
+        function showContact() {
+            document.getElementById('contact').style.display="flex";
+            document.getElementById('main-section').style.display='none';
+            document.getElementById("sidebar").classList.remove("show");
+        }
+
+        // Load items when page loads
+        window.onload = loadItems;
+    </script>
+</body>
+</html>
