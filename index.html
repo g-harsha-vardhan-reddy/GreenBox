@@ -196,7 +196,7 @@
     <div class="container">
         <div class="header">
             <div class="hamburger" onclick="toggleSidebar()">
-                <img src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcR98g3GZwzJE0Hlonie_5welkCsnrEwNmWpmHl1z5hO2ponWH8e">
+                <img src="images/logo.jpg">
             </div>
 
             <div class="sidebar" id="sidebar">
@@ -256,6 +256,7 @@
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5tSSevysfTNNnFnJRRIUui6ha1u2h66RCcwvIQTEP4hA9TqQpEubG&usqp=CAE&s",
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbNi9XWlH3QXiwCCuLt3wjOZ_DFOE9PvrXJP768WPjp_o3BYUyh2qA&usqp=CAE&s"
                     ];
+        const images = ["img1.jpg","img2.jpg","img3.jpg","img4.jpg","img5.jpg","img6.jpg","img7.jpg","img8.jpg","img9.jpg","img10.jpg"]
 
         // Function to add item to cart
         function addToCart() {
@@ -278,7 +279,7 @@
 
                 // Add image
                 const img = document.createElement('img');
-                img.src = `${images[index]}`; // Use images from the folder
+                img.src = `images/${images[index]}`; // Use images from the folder
                 img.alt = name;
                 itemDiv.appendChild(img);
 
